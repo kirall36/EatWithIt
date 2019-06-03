@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% if session.logged_in == True %}
+      <h1 align="right">{{ name }}</h1>
+    {% endif %}
+  <div class="jumbotron text-center">
+    <h1>Welcome To Eat With It</h1>
+    {% if session.logged_in == NULL %}
+      <a href="/register" class="btn btn-primary btn-lg">Register</a>
+      <a href="/login" class="btn btn-success btn-lg">Login</a>
+    {% endif %}
+  </div>
+{% endblock %}

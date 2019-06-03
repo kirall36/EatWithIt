@@ -17,13 +17,6 @@ class DerivationCodeDescription(BaseModel):
         table_name = 'derivation_code_description'
         primary_key = False
 
-class Diet(BaseModel):
-    id_diet = AutoField()
-    name = CharField()
-
-    class Meta:
-        table_name = 'diet'
-
 class Nutrient(BaseModel):
     derivation_code = ForeignKeyField(column_name='Derivation_Code', field='derivation_code', model=DerivationCodeDescription, null=True)
     ndb_no = CharField(column_name='NDB_No', index=True, null=True)
@@ -49,10 +42,6 @@ class ServingSize(BaseModel):
 
 class Products(BaseModel):
     ndb_number = ForeignKeyField(column_name='NDB_Number', field='ndb_no', model=ServingSize, primary_key=True)
-    data_source = CharField(null=True)
-    date_available = DateTimeField(null=True)
-    date_modified = DateTimeField(null=True)
-    gtin_upc = CharField(null=True)
     ingredients_english = TextField(null=True)
     long_name = CharField(null=True)
     manufacturer = CharField(null=True)
@@ -84,23 +73,18 @@ class Meal(BaseModel):
     class Meta:
         table_name = 'meal'
 
-class Role(BaseModel):
-    id_role = AutoField()
-    name = CharField()
-
-    class Meta:
-        table_name = 'role'
-
 class User(BaseModel):
     activity_level = CharField(column_name='activityLevel')
-    calories_recomendation = FloatField(column_name='caloriesRecomendation')
-    diet = ForeignKeyField(column_name='diet_id', field='id_diet', model=Diet)
+    birth_date = DateField()
+    calories_recomendation = FloatField(column_name='caloriesRecomendation', constraints=[SQL("DEFAULT 2000")])
+    diet = CharField(constraints=[SQL("DEFAULT 'wl'")])
     hight = FloatField()
     id_user = AutoField()
     login = CharField()
     name = CharField()
     password = CharField()
-    role = ForeignKeyField(column_name='role_id', field='id_role', model=Role)
+    role = CharField()
+    sex = CharField()
     weight = FloatField()
 
     class Meta:
