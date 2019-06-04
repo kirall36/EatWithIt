@@ -32,11 +32,18 @@
                     <td><h4>{{ ration_dict['carbs'] }}</h4></td>
                 </tr>
             </table>
-        <form action="/search_product" method="POST">
-            <input type="submit" class="btn btn-primary" value="Add product">
-        </form>
-        <form action="/delete_product" method="POST">
-            <input type="submit" class="btn btn-primary" value="Delete product">
-        </form>
+        <table class="table">
+            <tr>
+                <td><form action="/search_product" method="POST">
+                    <input type="submit" class="btn btn-primary" value="Add product">
+                </form></td>
+                <td><form action="/delete_product" method="POST">
+                    <input type="submit" class="btn btn-primary" value="Delete product">
+                </form></td>
+                <td><form action="/change_info" method="POST">
+                    <input type="submit" class="btn btn-primary" value="Change info">
+                </form></td>
+            </tr>
+        </table>
     {% endif %}
 {% endblock %}

@@ -83,6 +83,33 @@ def delete(idmeal):
     return redirect(url_for('index'))
 
 
+@app.route('/change_info', methods=['GET', 'POST'])
+def change_info():
+    form = ChangeForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User.get(User.login == session['login'])
+        password = sha256_crypt.encrypt(str(form.password.data))
+        vip_password = form.vip_password.data
+        hight = form.hight.data
+        weight = form.weight.data
+        activity_level = form.activity_level.data
+        diet = form.diet.data
+
+        if vip_password == VIPPASSWORD:
+            user.role = 'Vip'
+        user.password = password
+        user.hight = hight
+        user.weight = weight
+        user.activity_level = activity_level
+        user.diet = diet
+        user.calories_recomendation = calculate_calories(user)
+        user.save()
+
+        flash('You have changed your info', 'success')
+        return redirect(url_for('index'))
+
+    return render_template("change_info.html", form=form)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
