@@ -1,14 +1,39 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    {% if session.logged_in == True %}
-      <h1 align="right">{{ name }}</h1>
-    {% endif %}
-  <div class="jumbotron text-center">
+    <div class="jumbotron text-center">
     <h1>Welcome To Eat With It</h1>
     {% if session.logged_in == NULL %}
       <a href="/register" class="btn btn-primary btn-lg">Register</a>
       <a href="/login" class="btn btn-success btn-lg">Login</a>
     {% endif %}
   </div>
+    {% if session.logged_in == True %}
+        <table align="center" class="table">
+            <tr>
+                <td><h3>Calories recomendation  {{ ration_dict['recomendation'] }}</h3></td>
+                <td><h1 align="right">{{ name }}</h1></td>
+            </tr>
+            <table align="center" class="table">
+                <tr>
+                    <td><h4>The amount of calories eaten</h4></td>
+                    <td><h4>{{ ration_dict['calories'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Proteins</h4></td>
+                    <td><h4>{{ ration_dict['proteins'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Fats</h4></td>
+                    <td><h4>{{ ration_dict['fats'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Carbs</h4></td>
+                    <td><h4>{{ ration_dict['carbs'] }}</h4></td>
+                </tr>
+            </table>
+        <form action="/search_product" method="POST">
+            <input type="submit" class="btn btn-primary" value="Add product">
+        </form>
+    {% endif %}
 {% endblock %}

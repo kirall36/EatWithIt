@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% from "includes/_formhelpers.html" import render_field %}
+    <table align="center" class="table" border="3">
+        <thead class="thead-light">
+            <tr>
+                <td><h1>{{ product['name'] }}</h1></td>
+                <td><h1> Nutrition value for 100 g</h1></td>
+            </tr>
+        </thead>
+            <tr>
+                <td><h4>Calories</h4></td>
+                <td><h4>{{ product['calories'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Proteins</h4></td>
+                    <td><h4>{{ product['proteins'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Fats</h4></td>
+                    <td><h4>{{ product['fats'] }}</h4></td>
+                </tr>
+                <tr>
+                    <td><h4>Carbs</h4></td>
+                    <td><h4>{{ product['carbs'] }}</h4></td>
+                </tr>
+            </table>
+        <form method="POST" action="">
+                <div class="form-group">
+                    {{render_field(form.weight, class_="form-control")}}
+                </div>
+                <div class="form-group">
+                    {{render_field(form.meal_type, class_="form-control" )}}
+                </div>
+                <p><input type="submit" class="btn btn-primary" value="Add"></p>
+            </form>
+{% endblock %}

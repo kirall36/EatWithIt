@@ -1,9 +1,9 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
-from mymodels import *
-from wtforms import Form, StringField, FloatField, PasswordField, DateField, SelectField, validators
+from forms import *
 from passlib.hash import sha256_crypt
 from functools import wraps
 from calculation import *
+from bdservice import *
 
 
 app = Flask(__name__)
@@ -15,8 +15,17 @@ VIPPASSWORD = 'vipsecret'
 @app.route('/')
 def index():
     if 'login' in session:
+        ration = Ration.get(Ration.id_ration == session['ration'])
         user = User.get(User.login == session['login'])
-        return render_template('home.html', name=user.name)
+        ration_dict = {
+            'calories': ration.calories,
+            'proteins': ration.proteins,
+            'fats': ration.fats,
+            'carbs': ration.carbs,
+            'recomendation': user.calories_recomendation,
+        }
+
+        return render_template('home.html', name=user.name, ration_dict=ration_dict)
     return render_template('home.html')
 
 
@@ -25,26 +34,40 @@ def about():
     return render_template('about.html')
 
 
-class RegisterForm(Form):
-    name = StringField('Name', [validators.Length(min=1, max=50)])
-    login = StringField('Login', [validators.Length(min=1, max=50)])
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
-    ])
-    confirm = PasswordField('Confirm Password')
-    admin_password = PasswordField('Admin Password')
-    hight = FloatField('Hight')
-    weight = FloatField('Weight')
-    birth_date = DateField('Birth date in format yyyy-mm-dd', [validators.DataRequired()])
-    sex = SelectField(u'Sex', choices=[('m', 'male'), ('f', 'female')])
-    activity_level = SelectField(u'Activity Level', choices=[('low', 'Activity beyond baseline but fewer than 150 minutes a week'),
-                                                             ('medium', '150 minutes to 300 minutes a week'),
-                                                             ('high', 'More than 300 minutes a week')])
-    diet = SelectField(u'Diet Type', choices=[('wl', 'To loss your weight'), ('wm', 'To maintain your weight'),
-                                              ('wg', 'To gain your weight')])
-    vip_password = PasswordField('Enter VIP Password if you have one')
+@app.route('/search_product', methods=['GET', 'POST'])
+def search_product():
+    form = SearchProductForm(request.form)
+    if request.method == 'POST' and form.validate():
+        product_name = form.name.data
+        product = get_product(product_name)
+        if product:
+            return redirect(url_for('add_product', idproduct=product.get().idproducts, name=product.get().name, \
+                                    calories=product.get().calories, proteins=product.get().proteins, \
+                                    fats=product.get().fats, carbs=product.get().carbs))
+            #return render_template('add_product.html', product=product_dict, form=form)
+        else:
+            error ='Product with name ' + product_name + ' was not found'
+            return render_template('search_product.html', form=form, error=error)
+    return render_template('search_product.html', form=form)
 
+
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+    form = AddProductForm(request.form)
+    product = {
+        'idproduct': request.args.get('idproduct'),
+        'name': request.args.get('name'),
+        'calories': request.args.get('calories'),
+        'proteins': float(request.args.get('proteins')),
+        'fats': float(request.args.get('fats')),
+        'carbs': float(request.args.get('carbs')),
+    }
+    if request.method == 'POST' and form.validate():
+        weight = form.weight.data
+        meal_type = form.meal_type.data
+        add_product_in_ration(product, float(weight), meal_type, session['ration'])
+        return redirect(url_for('index'))
+    return render_template('add_product.html', form=form, product=product)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -106,7 +129,8 @@ def login():
                 # Passed
                 session['logged_in'] = True
                 session['login'] = login
-
+                ration = get_ration(user)
+                session['ration'] = ration.id_ration
 
                 flash('You are now logged in', 'success')
                 return redirect(url_for('index'))
