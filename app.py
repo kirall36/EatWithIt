@@ -66,8 +66,21 @@ def add_product():
         weight = form.weight.data
         meal_type = form.meal_type.data
         add_product_in_ration(product, float(weight), meal_type, session['ration'])
+        flash('Product ' + product['name'] +  ' was added', 'success')
         return redirect(url_for('index'))
     return render_template('add_product.html', form=form, product=product)
+
+
+@app.route('/delete_product', methods=['GET', 'POST'])
+def delete_product():
+    products = get_products_in_ration(session['ration'])
+    return render_template('delete_products.html', products=products)
+
+
+@app.route('/delete/<idmeal>', methods=['GET', 'POST'])
+def delete(idmeal):
+    delete_meal(idmeal, session['ration'])
+    return redirect(url_for('index'))
 
 
 @app.route('/register', methods=['GET', 'POST'])

@@ -30,3 +30,23 @@ def add_product_in_ration(product, weight, meal_type, ration):
     ration.fats += product['fats']*weight/100
     ration.carbs += product['carbs']*weight/100
     ration.save()
+
+def get_products_in_ration(rationid):
+    meals = Meal.select().join(MealsInRation).where(MealsInRation.id_ration == rationid).join(Ration).objects()
+    products = list(dict())
+    for m in meals:
+        products.append({'idmeal': m.id_meal, 'product': Products.get(Products.idproducts == m.product).name})
+    return products
+
+
+def delete_meal(idmeal, idration):
+    mealinr = MealsInRation.get(MealsInRation.id_meal == idmeal)
+    mealinr.delete_instance()
+    meal = Meal.get(Meal.id_meal == idmeal)
+    ration = Ration.get(Ration.id_ration == idration)
+    ration.calories -= meal.calories
+    ration.proteins -= meal.proteins
+    ration.fats -= meal.fats
+    ration.carbs -= meal.carbs
+    ration.save()
+    meal.delete_instance()

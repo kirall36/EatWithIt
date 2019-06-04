@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <table align="center" class="table">
+        {% for p in products %}
+            <tr>
+                    <td>{{ p.product }}</td>
+                    <td width="200" > <form action="/delete/{{ p.idmeal }}"><button type="submit" class="btn btn-primary">Delete</button></form></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
